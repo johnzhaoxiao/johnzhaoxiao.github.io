@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://johnzhaoxiao.github.io/2026/03/29/2026-03-29-%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BAClaude-Code-AI-CLI-%E6%AF%8F%E4%B8%80%E5%B1%82%E6%8A%80%E6%9C%AF%E6%8B%86%E8%A7%A3/</loc>
+    
+    <lastmod>2026-03-29</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://johnzhaoxiao.github.io/2026/03/29/%E8%87%AA%E6%88%91%E8%BF%9B%E5%8C%96%E5%9C%A8%E7%BA%BF%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E6%99%BA%E8%83%BD%E4%BD%93%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/</loc>
     
     <lastmod>2026-03-29</lastmod>
@@ -178,6 +187,41 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/LLM-Agent/</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/AI-CLI/</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/TypeScript/</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/Engineering/</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/Claude-Code/</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
@@ -203,6 +247,20 @@
   
   <url>
     <loc>https://johnzhaoxiao.github.io/categories/%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/categories/AI-Agent/</loc>
+    <lastmod>2026-03-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/categories/AI-Agent/LLM/</loc>
     <lastmod>2026-03-29</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

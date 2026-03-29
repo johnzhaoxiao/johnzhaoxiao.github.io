@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="X8NbtgXMaZPSnGuujxFu2jstD2cJM2Q4MTHXbcmAVmg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"johnzhaoxiao.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="通过从零实现一个 Claude Code 级别的 AI CLI，深入拆解 agentic CLI 每一层的工程设计：目录结构、System Prompt 缓存优化、Agent Loop、工具管线、权限系统、MCP 协议等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【译文】从零开始两天构建一个 Claude Code：AI CLI 每一层的技术拆解">
+<meta property="og:url" content="https://johnzhaoxiao.github.io/2026/03/29/2026-03-29-%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BAClaude-Code-AI-CLI-%E6%AF%8F%E4%B8%80%E5%B1%82%E6%8A%80%E6%9C%AF%E6%8B%86%E8%A7%A3/index.html">
+<meta property="og:site_name" content="我的技术博客">
+<meta property="og:description" content="通过从零实现一个 Claude Code 级别的 AI CLI，深入拆解 agentic CLI 每一层的工程设计：目录结构、System Prompt 缓存优化、Agent Loop、工具管线、权限系统、MCP 协议等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-03-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-29T12:53:15.992Z">
+<meta property="article:author" content="赵嘉祁">
+<meta property="article:tag" content="AI CLI">
+<meta property="article:tag" content="Claude Code">
+<meta property="article:tag" content="Engineering">
+<meta property="article:tag" content="LLM-Agent">
+<meta property="article:tag" content="TypeScript">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://johnzhaoxiao.github.io/2026/03/29/2026-03-29-%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BAClaude-Code-AI-CLI-%E6%AF%8F%E4%B8%80%E5%B1%82%E6%8A%80%E6%9C%AF%E6%8B%86%E8%A7%A3/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://johnzhaoxiao.github.io/2026/03/29/2026-03-29-%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BAClaude-Code-AI-CLI-%E6%AF%8F%E4%B8%80%E5%B1%82%E6%8A%80%E6%9C%AF%E6%8B%86%E8%A7%A3/","path":"2026/03/29/2026-03-29-从零构建Claude-Code-AI-CLI-每一层技术拆解/","title":"【译文】从零开始两天构建一个 Claude Code：AI CLI 每一层的技术拆解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>【译文】从零开始两天构建一个 Claude Code：AI CLI 每一层的技术拆解 | 我的技术博客</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">我的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">分享AI 、Agent、大模型、强化学习等技术与生活</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E5%8A%A8%E6%9C%BA"><span class="nav-number">1.</span> <span class="nav-text">背景动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A0%B8%E5%BF%83%E6%9E%B6%E6%9E%84%EF%BC%9A%E6%9C%80%E5%B0%8F%E5%BE%AA%E7%8E%AF"><span class="nav-number">2.</span> <span class="nav-text">一、核心架构：最小循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84%EF%BC%9A%E5%85%AD%E5%B1%82%E5%8D%95%E5%90%91%E4%BE%9D%E8%B5%96"><span class="nav-number">3.</span> <span class="nav-text">二、目录结构：六层单向依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B%EF%BC%9ANode-js-22-%E5%8E%9F%E7%94%9F%E8%83%BD%E5%8A%9B"><span class="nav-number">4.</span> <span class="nav-text">三、技术选型：Node.js 22 原生能力</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%A4%9A%E6%A8%A1%E5%9E%8B%E5%85%BC%E5%AE%B9%EF%BC%9A%E6%A0%BC%E5%BC%8F%E9%80%82%E9%85%8D%E5%B1%82"><span class="nav-number">5.</span> <span class="nav-text">四、多模型兼容：格式适配层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81System-Prompt-%E7%BC%93%E5%AD%98%E4%BC%98%E5%8C%96%EF%BC%88%E6%A0%B8%E5%BF%83%E8%AE%BE%E8%AE%A1%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">五、System Prompt 缓存优化（核心设计）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E9%97%AE%E9%A2%98%EF%BC%9A%E5%8D%95%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%96%B9%E5%BC%8F%E7%9A%84%E7%BC%BA%E9%99%B7"><span class="nav-number">6.1.</span> <span class="nav-text">5.1 问题：单字符串方式的缺陷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E8%A7%A3%E5%86%B3%EF%BC%9Ablock-%E6%95%B0%E7%BB%84-cache-control"><span class="nav-number">6.2.</span> <span class="nav-text">5.2 解决：block 数组 + cache_control</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81Agent-Loop%EF%BC%9A%E6%9C%89%E4%B8%8A%E9%99%90%E7%9A%84%E8%BF%AD%E4%BB%A3%E5%BE%AA%E7%8E%AF"><span class="nav-number">7.</span> <span class="nav-text">六、Agent Loop：有上限的迭代循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E5%B7%A5%E5%85%B7%E6%89%A7%E8%A1%8C%E7%AE%A1%E7%BA%BF%EF%BC%9A%E5%85%AD%E4%B8%AA%E9%98%B6%E6%AE%B5"><span class="nav-number">8.</span> <span class="nav-text">七、工具执行管线：六个阶段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E4%B8%8A%E4%B8%8B%E6%96%87%E5%8E%8B%E7%BC%A9%EF%BC%9A%E8%87%AA%E5%8A%A8-Compact-%E6%9C%BA%E5%88%B6"><span class="nav-number">9.</span> <span class="nav-text">八、上下文压缩：自动 Compact 机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81Prompt-Caching-%E7%9A%84%E4%B8%89%E4%B8%AA%E6%96%BD%E5%8A%9B%E7%82%B9"><span class="nav-number">10.</span> <span class="nav-text">九、Prompt Caching 的三个施力点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E5%B7%A5%E5%85%B7%E7%B3%BB%E7%BB%9F%EF%BC%9AJSON-Schema-%E5%AE%9A%E4%B9%89-%E5%8D%95%E4%B8%80%E5%88%86%E5%8F%91%E5%85%A5%E5%8F%A3"><span class="nav-number">11.</span> <span class="nav-text">十、工具系统：JSON Schema 定义 + 单一分发入口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#10-1-%E6%A0%B8%E5%BF%83%E5%86%85%E7%BD%AE%E5%B7%A5%E5%85%B7"><span class="nav-number">11.1.</span> <span class="nav-text">10.1 核心内置工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-2-Deferred-Tools%EF%BC%9A%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="nav-number">11.2.</span> <span class="nav-text">10.2 Deferred Tools：性能优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E6%9D%83%E9%99%90%E7%B3%BB%E7%BB%9F%EF%BC%9A%E5%AE%89%E5%85%A8%E4%B8%8E%E4%BD%93%E9%AA%8C%E7%9A%84%E5%B9%B3%E8%A1%A1"><span class="nav-number">12.</span> <span class="nav-text">十一、权限系统：安全与体验的平衡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#11-1-%E4%B8%89%E7%A7%8D%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="nav-number">12.1.</span> <span class="nav-text">11.1 三种运行模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-2-%E5%B7%A5%E5%85%B7%E5%88%86%E7%B1%BB%EF%BC%88%E6%B3%A8%E5%86%8C%E6%97%B6%E9%9D%99%E6%80%81%E5%A3%B0%E6%98%8E%EF%BC%89"><span class="nav-number">12.2.</span> <span class="nav-text">11.2 工具分类（注册时静态声明）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-3-%E4%B8%A4%E9%98%B6%E6%AE%B5%E5%88%86%E7%B1%BB%E5%99%A8%EF%BC%88%E5%A2%9E%E5%BC%BA-auto-%E6%A8%A1%E5%BC%8F%E5%AE%89%E5%85%A8%E6%80%A7%EF%BC%89"><span class="nav-number">12.3.</span> <span class="nav-text">11.3 两阶段分类器（增强 auto 模式安全性）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81MCP%EF%BC%88Model-Context-Protocol%EF%BC%89%EF%BC%9A%E6%A0%87%E5%87%86%E5%8C%96%E5%B7%A5%E5%85%B7%E5%8F%91%E7%8E%B0"><span class="nav-number">13.</span> <span class="nav-text">十二、MCP（Model Context Protocol）：标准化工具发现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%89%E3%80%81LSP-%E9%9B%86%E6%88%90%EF%BC%9A%E5%AE%9E%E6%97%B6%E4%BB%A3%E7%A0%81%E8%AF%8A%E6%96%AD"><span class="nav-number">14.</span> <span class="nav-text">十三、LSP 集成：实时代码诊断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%9B%9B%E3%80%81%E6%8F%92%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%9Amanifest-%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%89%A9%E5%B1%95"><span class="nav-number">15.</span> <span class="nav-text">十四、插件系统：manifest 驱动的扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%94%E3%80%81Skills-%E6%8A%80%E8%83%BD%E5%BA%93%EF%BC%9A%E8%BD%BB%E9%87%8F%E5%A4%8D%E7%94%A8%E5%8D%95%E5%85%83"><span class="nav-number">16.</span> <span class="nav-text">十五、Skills 技能库：轻量复用单元</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E4%B8%AA%E5%86%85%E7%BD%AE-Skill"><span class="nav-number">16.1.</span> <span class="nav-text">8 个内置 Skill</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%85%AD%E3%80%81%E5%A4%9A-Agent-%E5%8D%8F%E4%BD%9C%EF%BC%9A%E5%9B%A2%E9%98%9F%E5%8D%8F%E8%B0%83%E5%8D%8F%E8%AE%AE"><span class="nav-number">17.</span> <span class="nav-text">十六、多 Agent 协作：团队协调协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90-Agent%EF%BC%88Sub-Agent%EF%BC%89"><span class="nav-number">17.1.</span> <span class="nav-text">子 Agent（Sub-Agent）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E5%8F%B0-Agent"><span class="nav-number">17.2.</span> <span class="nav-text">后台 Agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E5%8D%8F%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">17.3.</span> <span class="nav-text">完整协作流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%83%E3%80%81Auto-Memory%EF%BC%9A%E7%94%A8%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%A8%A1%E6%8B%9F%E6%8C%81%E4%B9%85%E8%AE%B0%E5%BF%86"><span class="nav-number">18.</span> <span class="nav-text">十七、Auto Memory：用文件系统模拟持久记忆</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B"><span class="nav-number">18.1.</span> <span class="nav-text">记忆文件类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E5%85%AB%E3%80%81%E6%80%BB%E7%BB%93%EF%BC%9AHarness-Engineering-%E6%98%AF%E6%A0%B8%E5%BF%83%E9%9A%BE%E7%82%B9"><span class="nav-number">19.</span> <span class="nav-text">十八、总结：Harness Engineering 是核心难点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90"><span class="nav-number">20.</span> <span class="nav-text">相关资源</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">赵嘉祁</p>
+  <div class="site-description" itemprop="description">一个AI技术爱好者的博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnzhaoxiao.github.io/2026/03/29/2026-03-29-%E4%BB%8E%E9%9B%B6%E6%9E%84%E5%BB%BAClaude-Code-AI-CLI-%E6%AF%8F%E4%B8%80%E5%B1%82%E6%8A%80%E6%9C%AF%E6%8B%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="赵嘉祁">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我的技术博客">
+      <meta itemprop="description" content="一个AI技术爱好者的博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="【译文】从零开始两天构建一个 Claude Code：AI CLI 每一层的技术拆解 | 我的技术博客">
+      <meta itemprop="description" content="通过从零实现一个 Claude Code 级别的 AI CLI，深入拆解 agentic CLI 每一层的工程设计：目录结构、System Prompt 缓存优化、Agent Loop、工具管线、权限系统、MCP 协议等。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【译文】从零开始两天构建一个 Claude Code：AI CLI 每一层的技术拆解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-03-29 00:00:00 / 修改时间：20:53:15" itemprop="dateCreated datePublished" datetime="2026-03-29T00:00:00+08:00">2026-03-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI-Agent/" itemprop="url" rel="index"><span itemprop="name">AI-Agent</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI-Agent/LLM/" itemprop="url" rel="index"><span itemprop="name">LLM</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">通过从零实现一个 Claude Code 级别的 AI CLI，深入拆解 agentic CLI 每一层的工程设计：目录结构、System Prompt 缓存优化、Agent Loop、工具管线、权限系统、MCP 协议等。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p><strong>来源</strong>：@icebearminer（龙猫&#x2F;小八）Twitter&#x2F;X 帖子<br><strong>原文链接</strong>：<a target="_blank" rel="noopener" href="https://x.com/icebearminer/status/2037888800341610684">https://x.com/icebearminer/status/2037888800341610684</a><br><strong>产出</strong>：46 个文件，一万行 TypeScript，零框架依赖，唯一外部依赖 fast-glob</p>
+</blockquote>
+<hr>
+<h2 id="背景动机"><a href="#背景动机" class="headerlink" title="背景动机"></a>背景动机</h2><p>前两天突发奇想：一个生产级的 agentic CLI 到底需要哪些组件？每一层的具体怎么实现？</p>
+<ul>
+<li>SSE 缓冲区怎么管理？</li>
+<li>System prompt 怎么分段？</li>
+<li>工具权限怎么拦截？</li>
+<li>上下文满了怎么压缩？</li>
+</ul>
+<p>这些问题靠读文档回答不了，靠逆向混淆代码效率极低。所以选择了另一条路：<strong>以 Claude Code 为参照系，从零重建一个功能等价的实现</strong>。</p>
+<hr>
+<h2 id="一、核心架构：最小循环"><a href="#一、核心架构：最小循环" class="headerlink" title="一、核心架构：最小循环"></a>一、核心架构：最小循环</h2><p>在开始写任何代码之前，先要在脑子里跑通一个最小循环：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">用户输入 → 组装请求 → API 调用（SSE）→ 解析响应事件流 → 根据 stop_reason 决定分支</span><br></pre></td></tr></table></figure>
+
+<p><strong>stop_reason 分支逻辑：</strong></p>
+<ul>
+<li><code>end_turn</code> — 输出文本，结束本轮</li>
+<li><code>tool_use</code> — 执行工具调用 → 将 tool_result 追加到 messages → 反复迭代</li>
+</ul>
+<hr>
+<h2 id="二、目录结构：六层单向依赖"><a href="#二、目录结构：六层单向依赖" class="headerlink" title="二、目录结构：六层单向依赖"></a>二、目录结构：六层单向依赖</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">core/       — 引擎层，包含 Agent Loop、SSE 客户端、context 管理、compact 逻辑</span><br><span class="line">tools/      — 工具系统，包含所有内置工具的实现和 MCP 客户端</span><br><span class="line">ui/         — 终端渲染层，处理流式文本输出、进度指示、颜色主题</span><br><span class="line">plugins/    — 扩展系统，允许运行时注入工具和 hook</span><br><span class="line">skills/     — 技能库，对应 Claude Code 的 slash command 高级功能</span><br><span class="line">commands/   — 处理 / 前缀命令的解析和分发</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键约束</strong>：六层之间的依赖是<strong>单向</strong>的，core&#x2F; 不依赖 ui&#x2F;，tools&#x2F; 不依赖 skills&#x2F;。</p>
+<hr>
+<h2 id="三、技术选型：Node-js-22-原生能力"><a href="#三、技术选型：Node-js-22-原生能力" class="headerlink" title="三、技术选型：Node.js 22 原生能力"></a>三、技术选型：Node.js 22 原生能力</h2><table>
+<thead>
+<tr>
+<th>需求</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTTP 客户端</td>
+<td><code>fetch</code>（原生）</td>
+</tr>
+<tr>
+<td>流式响应</td>
+<td><code>ReadableStream</code>（原生）</td>
+</tr>
+<tr>
+<td>UTF-8 字节流</td>
+<td><code>TextDecoder</code>（原生）</td>
+</tr>
+<tr>
+<td>二进制数据</td>
+<td><code>Buffer</code>（原生）</td>
+</tr>
+<tr>
+<td>Shell 执行</td>
+<td><code>child_process.exec</code>（原生）</td>
+</tr>
+<tr>
+<td>文件匹配</td>
+<td><code>fast-glob</code>（唯一外部依赖）</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>fast-glob 唯一的外部依赖，原因：原生 glob 在跨平台路径处理上有已知缺陷，且 fast-glob 在处理 .gitignore 规则和大型目录的性能上比原生实现好一个数量级。</p>
+</blockquote>
+<hr>
+<h2 id="四、多模型兼容：格式适配层"><a href="#四、多模型兼容：格式适配层" class="headerlink" title="四、多模型兼容：格式适配层"></a>四、多模型兼容：格式适配层</h2><p><strong>问题</strong>：部分本地模型（如 Ollama、LM Studio）暴露 OpenAI 兼容接口，但事件格式与其他格式不同。</p>
+<p><strong>解决方案</strong>：在 SSE 客户端初始化时传入 <code>format: &#39;openai&#39;</code> 参数，在事件解析层做格式适配，将 OpenAI 的 delta 结构翻译成统一的内部事件类型。<strong>Agent Loop 层完全不感知 API 格式差异</strong>。</p>
+<hr>
+<h2 id="五、System-Prompt-缓存优化（核心设计）"><a href="#五、System-Prompt-缓存优化（核心设计）" class="headerlink" title="五、System Prompt 缓存优化（核心设计）"></a>五、System Prompt 缓存优化（核心设计）</h2><h3 id="5-1-问题：单字符串方式的缺陷"><a href="#5-1-问题：单字符串方式的缺陷" class="headerlink" title="5.1 问题：单字符串方式的缺陷"></a>5.1 问题：单字符串方式的缺陷</h3><p>最直觉的 system prompt 写法是一个大字符串，在生产环境有两个显著缺陷：</p>
+<ol>
+<li><strong>缓存无法有效命中</strong>：每轮对话 system prompt 几乎不变，但以单字符串传入，API 缓存无法按需匹配</li>
+<li><strong>污染动态内容</strong>：部分内容（当前目录、Git 状态、CLAUDE.md）每轮都变化，与静态内容混在一起会污染缓存</li>
+</ol>
+<h3 id="5-2-解决：block-数组-cache-control"><a href="#5-2-解决：block-数组-cache-control" class="headerlink" title="5.2 解决：block 数组 + cache_control"></a>5.2 解决：block 数组 + cache_control</h3><p>将 <code>system</code> 参数设为 <strong>block 数组</strong>，每个 block 可以独立设置 <code>cache_control</code>，按可变性分为两类：</p>
+<p><strong>静态段（打上 cache_control，首次写入缓存，后续命中）：</strong></p>
+<ul>
+<li>身份声明（参考龙虾的 User、Soul）</li>
+<li>工具使用规范（何时用 Bash vs 读文件、何时拒绝执行）</li>
+<li>编码风格（规范、注释原则）</li>
+<li>安全执行规则（禁止执行的命令类型）</li>
+</ul>
+<blockquote>
+<p>💡 这就是官方订阅为什么调用 API 能省不少钱——缓存命中率高。</p>
+</blockquote>
+<p><strong>动态段（不带 cache_control，每轮重新计算）：</strong></p>
+<ul>
+<li>当前工作目录和系统环境（每次启动可能不同）</li>
+<li>Git 仓库状态（git status 输出，每轮可能变化）</li>
+<li>CLAUDE.md 内容（用户可随时修改）</li>
+<li>MCP 服务器的自定义指令（运行时发现）</li>
+</ul>
+<p><strong>block 数组顺序固定</strong>：身份 → 工具指南 → 编码规范 → 安全规则 → 风格指南 → 环境信息 → Git 上下文 → CLAUDE.md → MCP 指令。</p>
+<blockquote>
+<p>Anthropic 的 prompt caching 按照 block 数组的<strong>前缀匹配</strong>来识别缓存，排在前面的静态内容越稳定，缓存命中率越高。</p>
+</blockquote>
+<hr>
+<h2 id="六、Agent-Loop：有上限的迭代循环"><a href="#六、Agent-Loop：有上限的迭代循环" class="headerlink" title="六、Agent Loop：有上限的迭代循环"></a>六、Agent Loop：有上限的迭代循环</h2><p><strong>骨架</strong>：一个有上限的 while 循环，最大迭代次数 <strong>25 次</strong>。</p>
+<blockquote>
+<p>25 轮足够完成大多数真实任务（读文件、分析、修改、验证通常在 10 轮内完成），同时防止 runaway loop 耗尽 API 额度。</p>
+</blockquote>
+<p><strong>每次迭代的流程：</strong></p>
+<ol>
+<li>检查是否需要 compact（上下文压缩）</li>
+<li>构建完整 prompt</li>
+<li>发起流式请求</li>
+<li>实时处理事件流</li>
+<li>检查 stop_reason — tool_use 则执行工具，end_turn 或 max_tokens 则结束循环</li>
+<li>构建 tool_result message，追加到 messages 数组，进入下一轮</li>
+</ol>
+<hr>
+<h2 id="七、工具执行管线：六个阶段"><a href="#七、工具执行管线：六个阶段" class="headerlink" title="七、工具执行管线：六个阶段"></a>七、工具执行管线：六个阶段</h2><p>工具执行是 Agent Loop 中<strong>最复杂</strong>的部分，共六个阶段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. renderToolCall  — 在终端展示将要执行的工具名和参数</span><br><span class="line">2. permissionCheck — 根据工具类型和参数决定是否需要用户确认</span><br><span class="line">3. preHook         — 插件系统的前置拦截点</span><br><span class="line">4. checkpoint      — 对于破坏性操作，在执行前快照相关文件状态</span><br><span class="line">5. executeTool     — 调用实际工具函数</span><br><span class="line">6. postHook        — 插件后置钩子</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="八、上下文压缩：自动-Compact-机制"><a href="#八、上下文压缩：自动-Compact-机制" class="headerlink" title="八、上下文压缩：自动 Compact 机制"></a>八、上下文压缩：自动 Compact 机制</h2><p>在每轮迭代开始时，估算当前 messages 数组的 token 数（总字符数除以 4），如果超过模型上下文限制的 <strong>85%</strong>，触发压缩：</p>
+<ol>
+<li>发起一次独立的 API 调用生成摘要</li>
+<li>用 <code>[{role: &#39;user&#39;, content: summary}, {role: &#39;assistant&#39;, content: &#39;Understood.&#39;}]</code> 替换原来的 messages 数组</li>
+</ol>
+<blockquote>
+<p>这点跟 Claude Code 是一样的。</p>
+</blockquote>
+<hr>
+<h2 id="九、Prompt-Caching-的三个施力点"><a href="#九、Prompt-Caching-的三个施力点" class="headerlink" title="九、Prompt Caching 的三个施力点"></a>九、Prompt Caching 的三个施力点</h2><table>
+<thead>
+<tr>
+<th>层级</th>
+<th>内容</th>
+<th>缓存策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>System Prompt Blocks</td>
+<td>静态段（身份、工具规范等）</td>
+<td>静态块走缓存</td>
+</tr>
+<tr>
+<td>Tools 数组</td>
+<td>工具定义</td>
+<td>最后一个 tool definition 打上 cache_control</td>
+</tr>
+<tr>
+<td>工具结果</td>
+<td>最后一条 tool_result message</td>
+<td>作为缓存断点</td>
+</tr>
+</tbody></table>
+<p>三层叠加的实际效果：每轮 API 调用<strong>只有少量 tokens 是真正的输入计费</strong>，大部分走缓存价格（约为正常输入价格的 <strong>10%</strong>）。</p>
+<blockquote>
+<p>中转站的缓存命中率一般都不会很高，但这个三层设计本身是值得借鉴的。</p>
+</blockquote>
+<hr>
+<h2 id="十、工具系统：JSON-Schema-定义-单一分发入口"><a href="#十、工具系统：JSON-Schema-定义-单一分发入口" class="headerlink" title="十、工具系统：JSON Schema 定义 + 单一分发入口"></a>十、工具系统：JSON Schema 定义 + 单一分发入口</h2><p><strong>入口</strong>：TOOL_DEFINITIONS，一个 <strong>JSON Schema 数组</strong>，描述每个工具的名称、用途和参数结构。模型通过这个数组”知道”有哪些工具可以调用以及如何调用。</p>
+<blockquote>
+<p>JSON Schema 能保证输出格式，LLM 的 JSON 输出也更容易阅读。</p>
+</blockquote>
+<p><strong>执行入口</strong>：单一的 <code>executeTool</code> 函数，内部用 switch 按工具名分发。MCP 工具通过 <code>mcp__</code> 前缀识别，走独立的调用路径。</p>
+<h3 id="10-1-核心内置工具"><a href="#10-1-核心内置工具" class="headerlink" title="10.1 核心内置工具"></a>10.1 核心内置工具</h3><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>实现要点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Read</strong></td>
+<td>fs.readFile 读取后加行号前缀，支持 offset 和 limit 分页</td>
+</tr>
+<tr>
+<td><strong>Write</strong></td>
+<td>写入前 <code>fs.mkdir({ recursive: true })</code> 确保父目录存在</td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td>精确字符串替换，old_string 必须在文件中唯一出现，多次出现则报错</td>
+</tr>
+<tr>
+<td><strong>Bash</strong></td>
+<td>child_process.exec 执行，120 秒超时，输出超 500 行时截断（保留前 200 + 后 100）</td>
+</tr>
+<tr>
+<td><strong>Grep</strong></td>
+<td>自实现 regex 引擎，支持三种输出模式、上下文行、跨行匹配，不依赖系统 grep</td>
+</tr>
+<tr>
+<td><strong>WebFetch &#x2F; WebSearch</strong></td>
+<td>fetch + HTML 剥离 + 截断，搜索走 DuckDuckGo</td>
+</tr>
+</tbody></table>
+<h3 id="10-2-Deferred-Tools：性能优化"><a href="#10-2-Deferred-Tools：性能优化" class="headerlink" title="10.2 Deferred Tools：性能优化"></a>10.2 Deferred Tools：性能优化</h3><p>低频工具（如 NotebookRead、TodoWrite）<strong>不放入</strong>每次请求的 tools 数组，而是标记为 <code>deferred</code>——模型需要时通过 ToolSearch 工具按关键词查询获取完整 schema，然后在下一轮调用。</p>
+<p><strong>效果</strong>：将 tools 数组的固定开销降低了约 <strong>40%</strong>。</p>
+<hr>
+<h2 id="十一、权限系统：安全与体验的平衡"><a href="#十一、权限系统：安全与体验的平衡" class="headerlink" title="十一、权限系统：安全与体验的平衡"></a>十一、权限系统：安全与体验的平衡</h2><h3 id="11-1-三种运行模式"><a href="#11-1-三种运行模式" class="headerlink" title="11.1 三种运行模式"></a>11.1 三种运行模式</h3><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>default</strong></td>
+<td>safe 类工具自动执行，dangerous 和 write 类需要用户确认</td>
+</tr>
+<tr>
+<td><strong>auto</strong></td>
+<td>绕过所有交互式提示，适合 CI——但 deny rules 仍然生效，底线不可越过</td>
+</tr>
+<tr>
+<td><strong>plan</strong></td>
+<td>只读沙箱，safe 工具放行，dangerous 和 write 工具被静默拒绝，可先看执行计划</td>
+</tr>
+</tbody></table>
+<h3 id="11-2-工具分类（注册时静态声明）"><a href="#11-2-工具分类（注册时静态声明）" class="headerlink" title="11.2 工具分类（注册时静态声明）"></a>11.2 工具分类（注册时静态声明）</h3><ul>
+<li><strong>safe</strong> — Read, Glob, Grep, WebFetch, WebSearch 等</li>
+<li><strong>dangerous</strong> — Bash, Agent（副作用范围不可预测）</li>
+<li><strong>write</strong> — Write, Edit（文件修改是最常见的需要审计的操作）</li>
+<li><strong>bypass</strong> — PlanMode 切换，始终无需确认</li>
+</ul>
+<h3 id="11-3-两阶段分类器（增强-auto-模式安全性）"><a href="#11-3-两阶段分类器（增强-auto-模式安全性）" class="headerlink" title="11.3 两阶段分类器（增强 auto 模式安全性）"></a>11.3 两阶段分类器（增强 auto 模式安全性）</h3><p><strong>Stage 1 — 纯模式匹配</strong>（零延迟，覆盖 90%+ 情况）：维护已知安全命令和已知危险命令的规则表，命中即返回。</p>
+<p><strong>Stage 2 — Haiku 模型判断</strong>：处理未覆盖的模糊操作，将命令字符串发给 Haiku 模型，要求返回 <code>allow / deny / ask_user</code> 三种之一。Haiku 延迟约 300-500ms，相比模型主循环几乎可以忽略。</p>
+<hr>
+<h2 id="十二、MCP（Model-Context-Protocol）：标准化工具发现"><a href="#十二、MCP（Model-Context-Protocol）：标准化工具发现" class="headerlink" title="十二、MCP（Model Context Protocol）：标准化工具发现"></a>十二、MCP（Model Context Protocol）：标准化工具发现</h2><p>MCP 本质上是一个<strong>标准化的工具发现协议</strong>。传统做法是把工具硬编码在 CLI 里，MCP 让工具变成可以独立部署的进程，通过统一接口被任何兼容客户端发现和调用。</p>
+<p><strong>协议层实现：</strong></p>
+<ul>
+<li><strong>传输</strong>：JSON-RPC 2.0 over stdio，启动 MCP server 进程，通过 stdin&#x2F;stdout 交换 JSON-RPC 消息</li>
+<li><strong>启动序列固定</strong>：<code>initialize</code> 握手 → <code>tools/list</code> 获取工具定义数组</li>
+<li><strong>格式兼容</strong>：工具定义包含 JSON Schema 格式的 inputSchema，与 Anthropic API 的工具格式<strong>直接兼容</strong></li>
+</ul>
+<p><strong>MCP 管理：</strong></p>
+<ul>
+<li><strong>McpManager</strong>：管理多个 server 的生命周期</li>
+<li><strong>命名空间隔离</strong>：工具名加上 <code>mcp__server_name__</code> 前缀</li>
+</ul>
+<hr>
+<h2 id="十三、LSP-集成：实时代码诊断"><a href="#十三、LSP-集成：实时代码诊断" class="headerlink" title="十三、LSP 集成：实时代码诊断"></a>十三、LSP 集成：实时代码诊断</h2><p>LSP 解决的问题：<strong>不是扩展工具，而是给模型提供实时的代码诊断信息</strong>。</p>
+<p>实现方式：</p>
+<ul>
+<li><strong>LspClient</strong>：实现 Language Server Protocol 客户端侧，使用 Content-Length 帧协议通信</li>
+<li><strong>LspManager</strong>：维护文件扩展名到语言服务器的路由表</li>
+<li><strong>自动通知</strong>：Write&#x2F;Edit 执行后自动通知对应语言服务器，诊断结果作为 <code>lsp_diagnostics</code> section 注入下一轮 system prompt</li>
+</ul>
+<blockquote>
+<p>这个设计让模型在修改代码后能<strong>立即看到编译器反馈</strong>，而不需要单独的”检查错误”工具调用，缩短了发现问题到修复问题的路径。</p>
+</blockquote>
+<hr>
+<h2 id="十四、插件系统：manifest-驱动的扩展"><a href="#十四、插件系统：manifest-驱动的扩展" class="headerlink" title="十四、插件系统：manifest 驱动的扩展"></a>十四、插件系统：manifest 驱动的扩展</h2><p>每个插件是一个目录，包含 <code>plugin.json</code>，声明六类扩展点：</p>
+<table>
+<thead>
+<tr>
+<th>扩展点</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>skills</td>
+<td>注入可调用的技能</td>
+</tr>
+<tr>
+<td>agents</td>
+<td>注入自定义 Agent 定义</td>
+</tr>
+<tr>
+<td>hooks</td>
+<td>前置&#x2F;后置钩子</td>
+</tr>
+<tr>
+<td>commands</td>
+<td>自定义斜杠命令</td>
+</tr>
+<tr>
+<td>mcpServers</td>
+<td>注入 MCP 服务器，启动时自动连接</td>
+</tr>
+<tr>
+<td>lspServers</td>
+<td>注入 LSP 服务器</td>
+</tr>
+</tbody></table>
+<p><strong>Skill 查找优先级</strong>：<code>内置 → 插件 → 项目 .clio/skills/</code></p>
+<blockquote>
+<p>项目级 skill 可以覆盖插件级，但不能覆盖内置，防止安全敏感的内置 skill 被意外替换。</p>
+</blockquote>
+<hr>
+<h2 id="十五、Skills-技能库：轻量复用单元"><a href="#十五、Skills-技能库：轻量复用单元" class="headerlink" title="十五、Skills 技能库：轻量复用单元"></a>十五、Skills 技能库：轻量复用单元</h2><p>Skill 是比自定义 Agent 更轻量的复用单元——本质上是<strong>参数化的 prompt 模板</strong>。</p>
+<h3 id="8-个内置-Skill"><a href="#8-个内置-Skill" class="headerlink" title="8 个内置 Skill"></a>8 个内置 Skill</h3><table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>commit &#x2F; pr &#x2F; review</strong></td>
+<td>Git 操作类，读取 diff 后生成规范化消息或 PR 描述</td>
+</tr>
+<tr>
+<td><strong>init</strong></td>
+<td>扫描项目结构，生成配置文件</td>
+</tr>
+<tr>
+<td><strong>simplify</strong></td>
+<td>审查变更代码，查找重复&#x2F;低效逻辑，直接修复</td>
+</tr>
+<tr>
+<td><strong>loop &#x2F; schedule</strong></td>
+<td>自动化类，持续执行或定时触发</td>
+</tr>
+<tr>
+<td><strong>update-config</strong></td>
+<td>修改 CLI 自身配置</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="十六、多-Agent-协作：团队协调协议"><a href="#十六、多-Agent-协作：团队协调协议" class="headerlink" title="十六、多 Agent 协作：团队协调协议"></a>十六、多 Agent 协作：团队协调协议</h2><h3 id="子-Agent（Sub-Agent）"><a href="#子-Agent（Sub-Agent）" class="headerlink" title="子 Agent（Sub-Agent）"></a>子 Agent（Sub-Agent）</h3><p>通过 <code>executeSubAgent()</code> 运行，是主 agent loop 的简化版本：</p>
+<ul>
+<li>排除团队管理工具（防止无限嵌套）</li>
+<li>最多 <strong>15 轮</strong>迭代</li>
+<li><strong>隔离模式</strong>（可选）：<code>isolation: &quot;worktree&quot;</code> 创建 Git worktree</li>
+</ul>
+<h3 id="后台-Agent"><a href="#后台-Agent" class="headerlink" title="后台 Agent"></a>后台 Agent</h3><p>通过 <code>run_in_background: true</code> 标记，Promise 存入 Map，完成时以 <code>tool_result</code> 形式通知主 Agent。</p>
+<h3 id="完整协作流程"><a href="#完整协作流程" class="headerlink" title="完整协作流程"></a>完整协作流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">主 Agent 调用 TeamCreate 创建团队</span><br><span class="line">       ↓</span><br><span class="line">SendMessage 分发任务</span><br><span class="line">       ↓</span><br><span class="line">等待完成</span><br><span class="line">       ↓</span><br><span class="line">汇总结果</span><br><span class="line">       ↓</span><br><span class="line">TeamDelete 释放资源</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这三个工具构成了一个<strong>最小化的多 Agent 协调协议</strong>，没有消息队列，没有共享状态，只有显式的消息传递。</p>
+</blockquote>
+<hr>
+<h2 id="十七、Auto-Memory：用文件系统模拟持久记忆"><a href="#十七、Auto-Memory：用文件系统模拟持久记忆" class="headerlink" title="十七、Auto Memory：用文件系统模拟持久记忆"></a>十七、Auto Memory：用文件系统模拟持久记忆</h2><p><strong>问题</strong>：LLM 本身是无状态的。每次对话从空白上下文开始，之前建立的偏好、项目约定、用户反馈全部消失。</p>
+<p><strong>解决</strong>：Auto Memory 用文件系统模拟持久记忆，不引入数据库，不设计新的存储格式。</p>
+<h3 id="记忆文件类型"><a href="#记忆文件类型" class="headerlink" title="记忆文件类型"></a>记忆文件类型</h3><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>user</strong></td>
+<td>用户偏好（角色、习惯、专长）</td>
+</tr>
+<tr>
+<td><strong>feedback</strong></td>
+<td>行为纠正（用户确认或否定的做法）</td>
+</tr>
+<tr>
+<td><strong>project</strong></td>
+<td>项目约定（不可从代码&#x2F;git 推导的上下文）</td>
+</tr>
+<tr>
+<td><strong>reference</strong></td>
+<td>外部资源指针（URL、看板、文档链接）</td>
+</tr>
+</tbody></table>
+<p><code>MEMORY.md</code> 是索引文件，每次对话开始时注入 system prompt，模型按需通过 Read 工具读取具体内容。</p>
+<p><strong>生命周期</strong>：首次运行创建索引 → 后续对话自动加载 → 过时记忆由模型主动更新或删除。</p>
+<blockquote>
+<p>记忆的写入完全复用现有工具链（Write&#x2F;Edit&#x2F;Read），零新增代码路径，工具权限模型自动适用。</p>
+</blockquote>
+<hr>
+<h2 id="十八、总结：Harness-Engineering-是核心难点"><a href="#十八、总结：Harness-Engineering-是核心难点" class="headerlink" title="十八、总结：Harness Engineering 是核心难点"></a>十八、总结：Harness Engineering 是核心难点</h2><p>整个项目验证了一个认知：<strong>Claude Code 的工程质量确实高于平均水平</strong>。</p>
+<p>分段 prompt 的三层缓存设计——静态系统提示缓存、工具定义缓存、动态内容不缓存——这个粒度的 cache 意识在大多数 LLM 应用里是缺失的。</p>
+<blockquote>
+<p><strong>核心结论</strong>：想构建 agent 工具&#x2F;产品，最重要的一条结论是：<strong>核心难点在于 Harness Engineering</strong>。</p>
+<p>毕竟调用 API 是十行代码的事。只有把工具调用结果正确地反馈给模型、在流式输出中间插入用户交互、处理长任务里的错误恢复——这些才是真正的工程壁垒。</p>
+</blockquote>
+<hr>
+<h2 id="相关资源"><a href="#相关资源" class="headerlink" title="相关资源"></a>相关资源</h2><ul>
+<li>推文链接：<a target="_blank" rel="noopener" href="https://x.com/icebearminer/status/2037888800341610684">https://x.com/icebearminer/status/2037888800341610684</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LLM-Agent/" rel="tag"># LLM-Agent</a>
+              <a href="/tags/AI-CLI/" rel="tag"># AI CLI</a>
+              <a href="/tags/TypeScript/" rel="tag"># TypeScript</a>
+              <a href="/tags/Engineering/" rel="tag"># Engineering</a>
+              <a href="/tags/Claude-Code/" rel="tag"># Claude Code</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/03/28/%E6%99%BA%E8%83%BD%E4%BD%93%E5%BB%BA%E8%AE%BE/" rel="prev" title="智能体建设">
+                  <i class="fa fa-angle-left"></i> 智能体建设
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/03/29/LLM_Agent%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%E5%85%A8%E6%99%AF%E5%9B%BE/" rel="next" title="LLM Agent 应用场景全景图">
+                  LLM Agent 应用场景全景图 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">赵嘉祁</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
