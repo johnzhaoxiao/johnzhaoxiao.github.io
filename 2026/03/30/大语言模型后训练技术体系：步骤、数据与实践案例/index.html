@@ -27,7 +27,7 @@
 <meta property="og:description" content="大语言模型后训练技术体系：步骤、数据与实践案例 生成时间：2026-03-30 12:37:49   第1章 引言：大语言模型后训练的技术背景与重要性1.1 大语言模型的技术演进与当前格局自2020年Transformer架构在自然语言处理领域取得突破性进展以来，大语言模型（Large Language Models, LLMs）已成为人工智能发展的核心驱动力。从最初的GPT-3到如今的GPT-4">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-03-30T04:37:49.000Z">
-<meta property="article:modified_time" content="2026-04-01T15:39:59.474Z">
+<meta property="article:modified_time" content="2026-04-01T15:59:18.822Z">
 <meta property="article:author" content="赵嘉祁">
 <meta property="article:tag" content="AI, Agent, 大模型, 强化学习">
 <meta name="twitter:card" content="summary">
@@ -222,7 +222,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2026-04-01 23:39:59" itemprop="dateModified" datetime="2026-04-01T23:39:59+08:00">2026-04-01</time>
+      <time title="修改时间：2026-04-01 23:59:18" itemprop="dateModified" datetime="2026-04-01T23:59:18+08:00">2026-04-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -447,7 +447,7 @@
 <li><strong>奖励信号生成</strong>：使用训练好的奖励模型评估策略输出</li>
 <li><strong>策略优化</strong>：通过强化学习算法优化策略参数</li>
 </ol>
-<h4 id="2-4-2-PPO算法及其变体"><a href="#2-4-2-PPO算法及其变体" class="headerlink" title="2.4.2 PPO算法及其变体"></a>2.4.2 PPO算法及其变体</h4><p>近端策略优化（Proximal Policy Optimization, PPO）是RLHF中最常用的强化学习算法。PPO通过限制策略更新的幅度，确保训练过程的稳定性。其目标函数为：<br>$$<br>\mathcal{L}^{CLIP}(\theta) = \mathbb{E}<em>t \left[ \min\left( r_t(\theta) \hat{A}<em>t, \text{clip}\left(r_t(\theta), 1-\epsilon, 1+\epsilon\right) \hat{A}<em>t \right) \right]<br>$$<br>其中，$r_t(\theta) = \frac{\pi</em>\theta(a_t|s_t)}{\pi</em>{\theta</em>{old}}(a_t|s_t)}$是重要性采样比率，$\hat{A}_t$是优势函数估计，$\epsilon$是裁剪参数（通常设为0.1-0.2）。</p>
+<h4 id="2-4-2-PPO算法及其变体"><a href="#2-4-2-PPO算法及其变体" class="headerlink" title="2.4.2 PPO算法及其变体"></a>2.4.2 PPO算法及其变体</h4><p>近端策略优化（Proximal Policy Optimization, PPO）是RLHF中最常用的强化学习算法。PPO通过限制策略更新的幅度，确保训练过程的稳定性。其目标函数为：<br>$$\mathcal{L}^{CLIP}(\theta) = \mathbb{E}_{t} \left[ \min\left( r_{t}(\theta) \hat{A}_{t}, \text{clip}\left(r_{t}(\theta), 1-\epsilon, 1+\epsilon\right) \hat{A}_{t} \right) \right]$$<br>其中，$r_{t}(\theta) = \frac{\pi_{\theta}(a_{t}|s_{t})}{\pi_{\theta_{old}}(a_{t}|s_{t})}$是重要性采样比率，$\hat{A}_{t}$是优势函数估计，$\epsilon$是裁剪参数（通常设为0.1-0.2）。</p>
 <p>PPO的变体和改进包括：</p>
 <ul>
 <li><strong>PPO-kl</strong>：加入KL散度惩罚项，防止策略偏离初始策略过远</li>
