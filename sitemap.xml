@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://johnzhaoxiao.github.io/2026/04/04/2026-04-04-Claude-Code-%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97/</loc>
+    
+    <lastmod>2026-04-04</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://johnzhaoxiao.github.io/2026/04/04/claude%20code%20%E7%99%BD%E7%9A%AE%E4%B9%A6/</loc>
     
     <lastmod>2026-04-04</lastmod>
@@ -351,6 +360,27 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/AI%E7%BC%96%E7%A8%8B/</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/Anthropic/</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/tags/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
@@ -439,6 +469,13 @@
   
   <url>
     <loc>https://johnzhaoxiao.github.io/categories/%E6%8A%80%E6%9C%AF/%E5%A4%A7%E6%A8%A1%E5%9E%8B/%E5%90%8E%E8%AE%AD%E7%BB%83/%E6%8A%80%E6%9C%AF%E4%BD%93%E7%B3%BB/%E5%AE%9E%E8%B7%B5%E6%A1%88%E4%BE%8B/</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://johnzhaoxiao.github.io/categories/AI%E5%B7%A5%E5%85%B7/</loc>
     <lastmod>2026-04-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
