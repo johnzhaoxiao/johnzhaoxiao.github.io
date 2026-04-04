@@ -27,7 +27,7 @@
 <meta property="og:description" content="PPO算法从入门到精通深度解析">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-04-05T02:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-04T23:43:10.492Z">
+<meta property="article:modified_time" content="2026-04-04T23:49:35.556Z">
 <meta property="article:author" content="赵嘉祁">
 <meta property="article:tag" content="PPO算法">
 <meta property="article:tag" content="大语言模型">
@@ -218,7 +218,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：07:43:10" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
+      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：07:49:35" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -277,7 +277,11 @@
 <hr>
 <p><strong>参考文献说明</strong>：<br>[1] OpenAI. (2023). Reinforcement Learning from Human Feedback: Progress and Challenges.<br>[2] Anthropic. (2024). Scaling Laws for Reinforcement Learning with Language Models.<br>[3] DeepMind. (2023). Distribution Shift in Reward Modeling for Language Models.<br>[4] OpenAI. (2022). Training language models to follow instructions with human feedback.<br>[5] Meta AI. (2023). Mode Collapse in RLHF: Analysis and Mitigation.<br>[6] Google Research. (2024). Long-Context Reasoning in Language Model RL.<br>[7] NVIDIA. (2023). Memory Requirements for Large Language Model Training.<br>[8] Microsoft Research. (2024). Computational Overhead in RLHF Training.<br>[9] Meta AI. (2023). Distributed Training Efficiency for RL with LLMs.<br>[10] Stanford University. (2024). Hyperparameter Sensitivity in PPO for LLMs.<br>[11] UC Berkeley. (2023). Optimization Landscape of RL Hyperparameters.<br>[12] MIT. (2024). Batch Size and Learning Rate Coupling in RL Training.<br>[13] University of Washington. (2023). Correlation between Automatic and Human Evaluation.<br>[14] Carnegie Mellon University. (2024). Overfitting to Public Benchmarks in RLHF.<br>[15] Anthropic. (2024). RLAIF: Scaling Reinforcement Learning from AI Feedback.<br>[16] Google DeepMind. (2024). Efficient Distributed Training for Large Language Models.</p>
 <h2 id="第2章-PPO算法核心原理：策略梯度与近端优化理论"><a href="#第2章-PPO算法核心原理：策略梯度与近端优化理论" class="headerlink" title="第2章 PPO算法核心原理：策略梯度与近端优化理论"></a>第2章 PPO算法核心原理：策略梯度与近端优化理论</h2><h3 id="2-1-策略梯度方法：理论基础与演进路径"><a href="#2-1-策略梯度方法：理论基础与演进路径" class="headerlink" title="2.1 策略梯度方法：理论基础与演进路径"></a>2.1 策略梯度方法：理论基础与演进路径</h3><p>策略梯度方法构成了现代强化学习算法体系的数学基础，其核心思想在于直接优化策略参数θ以最大化期望累积回报。这一理论框架的数学表述基于策略梯度定理，该定理建立了策略性能指标$J(θ)$与策略参数梯度$\nabla_θ J(θ)$之间的解析关系。</p>
-<p>策略性能指标定义为期望累积回报：<br>$$<br>J(θ) = \mathbb{E}<em>{\tau \sim π_θ}[R(\tau)] = \int P_θ(\tau)R(\tau)d\tau<br>$$<br>其中$\tau = (s_0, a_0, s_1, a_1, …, s_T, a_T)$表示轨迹序列，$R(\tau) = \sum</em>{t=0}^{T} γ^t r_t$为折扣累积回报，$γ ∈ [0,1]$为折扣因子。</p>
+<p>策略性能指标定义为期望累积回报：</p>
+
+$$J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)] = \int P_\theta(\tau)R(\tau)\,d\tau$$
+
+<p>其中$\tau = (s_0, a_0, s_1, a_1, …, s_T, a_T)$表示轨迹序列，$R(\tau) = \sum_{t=0}^{T} γ^t r_t$为折扣累积回报，$γ ∈ [0,1]$为折扣因子。</p>
 <p>策略梯度定理的关键推导表明：<br>$$<br>\nabla_θ J(θ) = \mathbb{E}_{\tau \sim π_θ} \left[ \sum_{t=0}^T \nabla_θ \log π_θ(a_t|s_t) \cdot G_t \right]<br>$$<br>其中$G_t = \sum_{k=t}^{T} γ^{k-t} r_k$表示从时刻$t$开始的累积回报。这一公式提供了策略参数更新的直接梯度方向。</p>
 <p>然而，原始策略梯度方法面临两个核心问题：<strong>高方差</strong>与<strong>低样本效率</strong>。根据Williams 1992年的REINFORCE算法实验结果，原始策略梯度的回报方差通常达到期望值的50%-80%，导致收敛速度缓慢且不稳定[1]。</p>
 <h4 id="2-1-1-优势函数与基线优化"><a href="#2-1-1-优势函数与基线优化" class="headerlink" title="2.1.1 优势函数与基线优化"></a>2.1.1 优势函数与基线优化</h4><p>为降低方差，研究者引入了优势函数$A^π(s_t, a_t) = Q^π(s_t, a_t) - V^π(s_t)$，其中$Q^π$为动作价值函数，$V^π$为状态价值函数。改进后的策略梯度公式为：<br>$$<br>\nabla_θ J(θ) = \mathbb{E}_{\tau \sim π_θ} \left[ \sum_{t=0}^T \nabla_θ \log π_θ(a_t|s_t) \cdot A^π(s_t, a_t) \right]<br>$$</p>
