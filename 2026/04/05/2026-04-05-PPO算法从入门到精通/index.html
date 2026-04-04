@@ -27,7 +27,7 @@
 <meta property="og:description" content="PPO算法从入门到精通深度解析">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-04-05T02:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-04T23:54:15.365Z">
+<meta property="article:modified_time" content="2026-04-04T23:57:28.481Z">
 <meta property="article:author" content="赵嘉祁">
 <meta property="article:tag" content="PPO算法">
 <meta property="article:tag" content="大语言模型">
@@ -218,7 +218,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：07:54:15" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
+      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：07:57:28" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -317,12 +317,14 @@ $$J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)] = \int P_\theta(\tau)R(
 <p>其中，$r_t(θ) = \frac{\pi_{θ}(a_t|s_t)}{\pi_{θ_{\text{old}}}(a_t|s_t)}$ 表示概率比率，$\hat{A}_t$ 为优势估计，$\epsilon$ 为裁剪超参数（常取 $0.1 \sim 0.3$）。</p>
 <p>裁剪机制的工作原理：当优势$\hat{A}_t$为正时，限制比率$r_t(θ)$不超过$1+ε$，防止过度优化；当优势为负时，限制比率不低于$1-ε$，防止过度惩罚。这种机制在数学上近似实现了KL散度约束，但计算复杂度仅为$O(d)$。</p>
 <p><strong>PPO-Clip算法伪代码</strong>：</p>
-<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">初始化策略参数θ，价值函数参数φ</span><br><span class="line">for 迭代次数 = 1 to N do</span><br><span class="line">    使用当前策略π_θ收集轨迹数据</span><br><span class="line">    计算优势估计\\hat{A}_t（使用GAE）</span><br><span class="line">    计算重要性采样比率r_t(θ) = π_θ(a_t|s_t)/π_{θ_{old}}(a_t|s_t)</span><br><span class="line">    计算裁剪目标函数L^{CLIP}(θ)</span><br><span class="line">    使用Adam优化器更新θ以最大化L^{CLIP}(θ)</span><br><span class="line">    更新价值函数参数φ以最小化价值损失</span><br><span class="line">end for</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">初始化策略参数θ，价值函数参数φ</span><br><span class="line">for 迭代次数 = 1 to N do</span><br><span class="line">    使用当前策略π_θ收集轨迹数据</span><br><span class="line">    计算优势估计$\hat{A}_t$（使用GAE）</span><br><span class="line">    计算重要性采    样比率$r_t(θ) = \frac{\pi_{θ}(a_t|s_t)}{\pi_{θ_{\text{old}}}(a_t|s_t)}$</span><br><span class="line">    计算裁剪目标函数$L^{CLIP}(θ)$</span><br><span class="line">    使用Adam优化器更新θ以最大化$L^{CLIP}(θ)$</span><br><span class="line">    更新价值函数参数φ以最小化价值损失</span><br><span class="line">end for</span><br></pre></td></tr></tbody></table></figure>
 
-<h4 id="2-3-2-PPO-KL：自适应惩罚机制"><a href="#2-3-2-PPO-KL：自适应惩罚机制" class="headerlink" title="2.3.2 PPO-KL：自适应惩罚机制"></a>2.3.2 PPO-KL：自适应惩罚机制</h4><p>PPO-KL采用KL散度惩罚项替代硬性约束，其目标函数为：<br>$$<br>L^{KL}(θ) = \mathbb{E}<em>t \left[ r_t(θ) \hat{A}_t - β D_{KL}(π</em>{θ_{old}}(·|s_t) || π_θ(·|s_t)) \right]<br>$$<br>其中β为自适应系数，根据当前KL散度与目标值$δ_{target}$的偏差动态调整：<br>$$<br>β_{k+1} =<br>\begin{cases}<br>β_k / 1.5 &amp; \text{if } \bar{D}<em>{KL} &lt; δ_{target} / 2 \\<br>β_k \times 1.5 &amp; \text{if } \bar{D}_{KL} &gt; δ</em>{target} \times 2 \\<br>β_k &amp; \text{otherwise}<br>\end{cases}<br>$$</p>
+<h4 id="2-3-2-PPO-KL：自适应惩罚机制"><a href="#2-3-2-PPO-KL：自适应惩罚机制" class="headerlink" title="2.3.2 PPO-KL：自适应惩罚机制"></a>2.3.2 PPO-KL：自适应惩罚机制</h4><p>PPO-KL采用KL散度惩罚项替代硬性约束，其目标函数为：</p>
+<p>$$<br>L^{KL}(θ) = \mathbb{E}<em>t \Big[ r_t(θ),\hat{A}_t - β D_{KL}(π</em>{θ_{old}}(·|s_t) || π_θ(·|s_t)) \Big]<br>$$</p>
+<p>其中β为自适应系数，根据当前KL散度与目标值$δ_{target}$的偏差动态调整：<br>$$<br>β_{k+1} =<br>\begin{cases}<br>β_k / 1.5 &amp; \text{if } \bar{D}<em>{KL} &lt; δ_{target} / 2 \<br>β_k \times 1.5 &amp; \text{if } \bar{D}_{KL} &gt; δ</em>{target} \times 2 \<br>β_k &amp; \text{otherwise}<br>\end{cases}<br>$$</p>
 <p>这种自适应机制在训练初期允许较大的策略变化（β较小），在训练后期逐渐加强约束（β增大），实现探索与利用的动态平衡。</p>
 <p><strong>PPO-KL算法伪代码</strong>：</p>
-<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">初始化策略参数θ，价值函数参数φ，惩罚系数β</span><br><span class="line">for 迭代次数 = 1 to N do</span><br><span class="line">    使用当前策略π_θ收集轨迹数据</span><br><span class="line">    计算优势估计\\hat{A}_t（使用GAE）</span><br><span class="line">    计算重要性采样比率r_t(θ) = π_θ(a_t|s_t)/π_{θ_{old}}(a_t|s_t)</span><br><span class="line">    计算KL散度D_{KL}(π_{θ_{old}} || π_θ)</span><br><span class="line">    根据KL散度调整β</span><br><span class="line">    计算惩罚目标函数L^{KL}(θ)</span><br><span class="line">    使用Adam优化器更新θ以最大化L^{KL}(θ)</span><br><span class="line">    更新价值函数参数φ以最小化价值损失</span><br><span class="line">end for</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">初始化策略参数θ，价值函数参数φ，惩罚系数β</span><br><span class="line">for 迭代次数 = 1 to N do</span><br><span class="line">    使用当前策略$\pi_θ$收集轨迹数据</span><br><span class="line">    计算优势估计$\hat{A}_t$（使用GAE）</span><br><span class="line">    计算重要性采样比率$r_t(θ) = \frac{\pi_{θ}(a_t|s_t)}{\pi_{θ_{\text{old}}}(a_t|s_t)}$</span><br><span class="line">    计算KL散度$D_{KL}(\pi_{θ_{old}} || \pi_θ)$</span><br><span class="line">    根据KL散度调整$β$</span><br><span class="line">    计算惩罚目标函数$L^{KL}(θ)$</span><br><span class="line">    使用Adam优化器更新$θ$以最大化$L^{KL}(θ)$</span><br><span class="line">    更新价值函数参数φ以最小化价值损失</span><br><span class="line">end for</span><br></pre></td></tr></tbody></table></figure>
 
 <h4 id="2-3-3-两种变体的性能对比"><a href="#2-3-3-两种变体的性能对比" class="headerlink" title="2.3.3 两种变体的性能对比"></a>2.3.3 两种变体的性能对比</h4><p>实验研究表明，PPO-Clip与PPO-KL在不同任务场景下表现各异[4]：</p>
 <table>
