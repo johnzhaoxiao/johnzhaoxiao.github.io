@@ -27,7 +27,7 @@
 <meta property="og:description" content="PPO算法从入门到精通深度解析">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-04-05T02:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-05T00:14:49.029Z">
+<meta property="article:modified_time" content="2026-04-05T00:31:56.977Z">
 <meta property="article:author" content="赵嘉祁">
 <meta property="article:tag" content="PPO算法">
 <meta property="article:tag" content="大语言模型">
@@ -218,7 +218,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：08:14:49" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
+      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：08:31:56" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -492,11 +492,69 @@ end for</p>
 
 
 <p><strong>大语言模型训练关联</strong>：对于大语言模型的高维离散动作空间（词汇表规模5万-10万token），裁剪机制特别重要。该机制可防止策略在巨大动作空间中发生剧烈波动，确保训练稳定性。在GPT-3等大语言模型训练中，$\epsilon$通常设置为0.2，这一取值在稳定性与收敛速度间取得了良好平衡[3]。</p>
-<h4 id="3-1-4-PPO-Clip算法伪代码"><a href="#3-1-4-PPO-Clip算法伪代码" class="headerlink" title="3.1.4 PPO-Clip算法伪代码"></a>3.1.4 PPO-Clip算法伪代码</h4><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">算法1: PPO-Clip</span><br><span class="line">输入: 初始策略参数θ, 初始价值函数参数φ, 裁剪参数ε, 学习率α</span><br><span class="line">输出: 优化后的策略参数θ*, 价值函数参数φ*</span><br><span class="line"></span><br><span class="line">1: for 迭代次数 k = 1 to K do</span><br><span class="line">2:     使用当前策略π_θ收集N条轨迹数据</span><br><span class="line">3:     计算优势估计Â_t（使用GAE，λ=0.95）</span><br><span class="line">4:     计算重要性采样比率 r_t(θ) = π_θ(a_t|s_t)/π_{θ_old}(a_t|s_t)</span><br><span class="line">5:     </span><br><span class="line">6:     # 策略网络更新</span><br><span class="line">7:     for epoch = 1 to M do</span><br><span class="line">8:         计算裁剪目标函数 L^{CLIP}(θ)</span><br><span class="line">9:         使用Adam优化器更新θ: θ ← θ + α∇_θL^{CLIP}(θ)</span><br><span class="line">10:     end for</span><br><span class="line">11:    </span><br><span class="line">12:     # 价值网络更新</span><br><span class="line">13:     for epoch = 1 to M do</span><br><span class="line">14:         计算价值函数损失 L^V(φ)</span><br><span class="line">15:         使用Adam优化器更新φ: φ ← φ - α∇_φL^V(φ)</span><br><span class="line">16:     end for</span><br><span class="line">17:    </span><br><span class="line">18:     更新旧策略参数: θ_old ← θ</span><br><span class="line">19: end for</span><br></pre></td></tr></tbody></table></figure>
+<h4 id="3-1-4-PPO-Clip算法伪代码"><a href="#3-1-4-PPO-Clip算法伪代码" class="headerlink" title="3.1.4 PPO-Clip算法伪代码"></a>3.1.4 PPO-Clip算法伪代码</h4>
+<blockquote class="algorithm-pseudocode">
+<p><strong>算法1：PPO-Clip</strong><br>
+<strong>输入</strong>：初始策略参数 $\theta$，初始价值函数参数 $\phi$，裁剪参数 $\epsilon$，学习率 $\alpha$<br>
+<strong>输出</strong>：优化后的策略参数 $\theta^\ast$，价值函数参数 $\phi^\ast$</p>
+<p>1: for 迭代次数 $k = 1$ to $K$ do<br>
+　　2: 使用当前策略 $\pi_\theta$ 收集 $N$ 条轨迹数据<br>
+　　3: 计算优势估计 $\hat{A}_t$（使用 GAE，$\lambda=0.95$）<br>
+　　4: 计算重要性采样比率 $r_{t}(\theta) = \dfrac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_{\mathrm{old}}}(a_t \mid s_t)}$<br>
+　　5: <br>
+　　6: # 策略网络更新<br>
+　　7: for $\mathrm{epoch} = 1$ to $M$ do<br>
+　　8: 　　计算裁剪目标函数 $L^{\mathrm{CLIP}}(\theta)$<br>
+　　9: 　　使用 Adam 优化器更新 $\theta$：$\theta \leftarrow \theta + \alpha \nabla_{\theta} L^{\mathrm{CLIP}}(\theta)$<br>
+　　10: end for<br>
+　　11: <br>
+　　12: # 价值网络更新<br>
+　　13: for $\mathrm{epoch} = 1$ to $M$ do<br>
+　　14: 　　计算价值函数损失 $L^{V}(\phi)$<br>
+　　15: 　　使用 Adam 优化器更新 $\phi$：$\phi \leftarrow \phi - \alpha \nabla_{\phi} L^{V}(\phi)$<br>
+　　16: end for<br>
+　　17: <br>
+　　18: 更新旧策略参数：$\theta_{\mathrm{old}} \leftarrow \theta$<br>
+19: end for</p>
+</blockquote>
+
 
 <h3 id="3-2-KL惩罚与价值函数优化"><a href="#3-2-KL惩罚与价值函数优化" class="headerlink" title="3.2 KL惩罚与价值函数优化"></a>3.2 KL惩罚与价值函数优化</h3><h4 id="3-2-1-PPO-KL目标函数设计"><a href="#3-2-1-PPO-KL目标函数设计" class="headerlink" title="3.2.1 PPO-KL目标函数设计"></a>3.2.1 PPO-KL目标函数设计</h4><p>PPO-KL采用KL散度惩罚项替代硬性裁剪约束，其目标函数为：<br>$$<br>J^{\text{KL}}(\theta) = \mathbb{E}<em>t \left[ r_t(\theta) \hat{A}_t - \beta D_{\text{KL}}(\pi</em>{\theta_{\text{old}}}(\cdot|s_t) \| \pi_\theta(\cdot|s_t)) \right]<br>$$<br>其中$\beta$为自适应惩罚系数，根据当前KL散度与目标值$\delta_{\text{target}}$的偏差动态调整：<br>$$<br>\beta_{k+1} =<br>\begin{cases}<br>\beta_k / 1.5 &amp; \text{if } \bar{D}<em>{\text{KL}} &lt; \delta_{\text{target}} / 2 \\<br>\beta_k \times 1.5 &amp; \text{if } \bar{D}_{\text{KL}} &gt; \delta</em>{\text{target}} \times 2 \\<br>\beta_k &amp; \text{otherwise}<br>\end{cases}<br>$$</p>
 <p>这种自适应机制在训练初期允许较大的策略变化（$\beta$较小），在训练后期逐渐加强约束（$\beta$增大），实现探索与利用的动态平衡。典型参数设置为$\delta_{\text{target}}=0.01$，初始$\beta=1.0$[4]。</p>
-<h4 id="3-2-2-PPO-KL算法伪代码"><a href="#3-2-2-PPO-KL算法伪代码" class="headerlink" title="3.2.2 PPO-KL算法伪代码"></a>3.2.2 PPO-KL算法伪代码</h4><figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">算法2: PPO-KL</span><br><span class="line">输入: 初始策略参数θ, 初始价值函数参数φ, 目标KL散度δ_target, 初始惩罚系数β</span><br><span class="line">输出: 优化后的策略参数θ*, 价值函数参数φ*</span><br><span class="line"></span><br><span class="line">1: for 迭代次数 k = 1 to K do</span><br><span class="line">2:     使用当前策略π_θ收集N条轨迹数据</span><br><span class="line">3:     计算优势估计Â_t（使用GAE，λ=0.95）</span><br><span class="line">4:     计算重要性采样比率 r_t(θ) = π_θ(a_t|s_t)/π_{θ_old}(a_t|s_t)</span><br><span class="line">5:     计算平均KL散度 D_KL = E[D_KL(π_{θ_old} || π_θ)]</span><br><span class="line">6:     </span><br><span class="line">7:     # 自适应调整β</span><br><span class="line">8:     if D_KL &lt; δ_target/2 then</span><br><span class="line">9:         β ← β / 1.5</span><br><span class="line">10:    else if D_KL &gt; δ_target×2 then</span><br><span class="line">11:        β ← β × 1.5</span><br><span class="line">12:    end if</span><br><span class="line">13:    </span><br><span class="line">14:    # 策略网络更新</span><br><span class="line">15:    for epoch = 1 to M do</span><br><span class="line">16:        计算KL惩罚目标函数 L^{KL}(θ)</span><br><span class="line">17:        使用Adam优化器更新θ: θ ← θ + α∇_θL^{KL}(θ)</span><br><span class="line">18:    end for</span><br><span class="line">19:    </span><br><span class="line">20:    # 价值网络更新（同PPO-Clip）</span><br><span class="line">21:    for epoch = 1 to M do</span><br><span class="line">22:        计算价值函数损失 L^V(φ)</span><br><span class="line">23:        使用Adam优化器更新φ: φ ← φ - α∇_φL^V(φ)</span><br><span class="line">24:    end for</span><br><span class="line">25:    </span><br><span class="line">26:    更新旧策略参数: θ_old ← θ</span><br><span class="line">27: end for</span><br></pre></td></tr></tbody></table></figure>
+<h4 id="3-2-2-PPO-KL算法伪代码"><a href="#3-2-2-PPO-KL算法伪代码" class="headerlink" title="3.2.2 PPO-KL算法伪代码"></a>3.2.2 PPO-KL算法伪代码</h4>
+<blockquote class="algorithm-pseudocode">
+<p><strong>算法2：PPO-KL</strong><br>
+<strong>输入</strong>：初始策略参数 $\theta$，初始价值函数参数 $\phi$，目标 KL 散度 $\delta_{\mathrm{target}}$，初始惩罚系数 $\beta$<br>
+<strong>输出</strong>：优化后的策略参数 $\theta^\ast$，价值函数参数 $\phi^\ast$</p>
+<p>1: for 迭代次数 $k = 1$ to $K$ do<br>
+　　2: 使用当前策略 $\pi_\theta$ 收集 $N$ 条轨迹数据<br>
+　　3: 计算优势估计 $\hat{A}_t$（使用 GAE，$\lambda=0.95$）<br>
+　　4: 计算重要性采样比率 $r_{t}(\theta) = \dfrac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_{\mathrm{old}}}(a_t \mid s_t)}$<br>
+　　5: 计算平均 KL 散度 $\bar{D}_{\mathrm{KL}} = \mathbb{E}\big[D_{\mathrm{KL}}(\pi_{\theta_{\mathrm{old}}} \,\Vert\, \pi_\theta)\big]$<br>
+　　6: <br>
+　　7: # 自适应调整 $\beta$<br>
+　　8: if $\bar{D}_{\mathrm{KL}} \lt \delta_{\mathrm{target}}/2$ then<br>
+　　9: 　　$\beta \leftarrow \beta / 1.5$<br>
+　　10: else if $\bar{D}_{\mathrm{KL}} \gt \delta_{\mathrm{target}} \times 2$ then<br>
+　　11: 　　$\beta \leftarrow \beta \times 1.5$<br>
+　　12: end if<br>
+　　13: <br>
+　　14: # 策略网络更新<br>
+　　15: for $\mathrm{epoch} = 1$ to $M$ do<br>
+　　16: 　　计算 KL 惩罚目标函数 $L^{\mathrm{KL}}(\theta)$<br>
+　　17: 　　使用 Adam 优化器更新 $\theta$：$\theta \leftarrow \theta + \alpha \nabla_{\theta} L^{\mathrm{KL}}(\theta)$<br>
+　　18: end for<br>
+　　19: <br>
+　　20: # 价值网络更新（同 PPO-Clip）<br>
+　　21: for $\mathrm{epoch} = 1$ to $M$ do<br>
+　　22: 　　计算价值函数损失 $L^{V}(\phi)$<br>
+　　23: 　　使用 Adam 优化器更新 $\phi$：$\phi \leftarrow \phi - \alpha \nabla_{\phi} L^{V}(\phi)$<br>
+　　24: end for<br>
+　　25: <br>
+　　26: 更新旧策略参数：$\theta_{\mathrm{old}} \leftarrow \theta$<br>
+27: end for</p>
+</blockquote>
+
 
 <h4 id="3-2-3-价值函数优化设计"><a href="#3-2-3-价值函数优化设计" class="headerlink" title="3.2.3 价值函数优化设计"></a>3.2.3 价值函数优化设计</h4><p>价值函数$V_\phi(s)$的优化目标为最小化均方误差：<br>$$<br>L^V(\phi) = \mathbb{E}_t \left[ (V_\phi(s_t) - V_t^{\text{target}})^2 \right]<br>$$<br>其中目标价值$V_t^{\text{target}}$通常采用n步回报或GAE估计。</p>
 <p>为防止价值函数过度更新，PPO引入价值函数裁剪：<br>$$<br>L^V_{\text{CLIP}}(\phi) = \mathbb{E}_t \left[ \max \left( (V_\phi(s_t) - V_t^{\text{target}})^2, (\text{clip}(V_\phi(s_t), V_{\phi_{\text{old}}}(s_t)-\epsilon, V_{\phi_{\text{old}}}(s_t)+\epsilon) - V_t^{\text{target}})^2 \right) \right]<br>$$</p>
