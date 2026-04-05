@@ -27,7 +27,7 @@
 <meta property="og:description" content="PPO算法从入门到精通深度解析">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-04-05T02:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-05T00:42:26.444Z">
+<meta property="article:modified_time" content="2026-04-05T00:44:15.822Z">
 <meta property="article:author" content="赵嘉祁">
 <meta property="article:tag" content="PPO算法">
 <meta property="article:tag" content="大语言模型">
@@ -218,7 +218,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：08:42:26" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
+      <time title="创建时间：2026-04-05 10:00:00 / 修改时间：08:44:15" itemprop="dateCreated datePublished" datetime="2026-04-05T10:00:00+08:00">2026-04-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -598,7 +598,11 @@ $$\beta_{k+1} =
 </ol>
 <h4 id="3-3-3-数学收敛性分析"><a href="#3-3-3-数学收敛性分析" class="headerlink" title="3.3.3 数学收敛性分析"></a>3.3.3 数学收敛性分析</h4><p>**单调改进保证**：<br>在适当条件下，PPO可保证策略性能的单调改进。设新旧策略的KL散度满足$D_{\text{KL}}(\pi_{\theta_{\text{old}}} \| \pi_\theta) \leq \delta$，则性能改进下界为：<br>$$<br>J(\theta) - J(\theta_{\text{old}}) \geq \frac{1}{1-\gamma} \mathbb{E}_{s \sim \rho_{\theta_{\text{old}}}} \left[ \mathbb{E}_{a \sim \pi_\theta}[A^{\theta_{\text{old}}}(s,a)] - \frac{2\epsilon C}{1-\gamma} \right]<br>$$<br>其中$C = \frac{2\gamma}{(1-\gamma)^2} \max_s \max_a \frac{\pi_\theta(a|s)}{\pi_{\theta_{\text{old}}}(a|s)}$为重要性权重上界。</p>
 <p><strong>公式解释</strong>：这一不等式表明，在KL散度约束下，PPO可保证每次更新的性能改进至少为期望优势减去一个与裁剪参数$\epsilon$相关的惩罚项。其中$C$衡量了新旧策略的最大比率，当策略变化较小时，$C$接近1，性能改进下界主要由期望优势决定。</p>
-<p>**收敛速率分析**：<br>在策略参数空间满足强凸性和平滑性假设的条件下，PPO的收敛速率可达$O(1/\sqrt{T})$，其中$T$为迭代次数。具体而言，经过$T$次迭代后：<br>$$<br>\mathbb{E}[J(\theta_T) - J(\theta^<em>)] \leq \frac{R}{\sqrt{T}}<br>$$<br>其中$\theta^</em>$为最优策略参数，$R$为与问题相关的常数。</p>
+<p><strong>收敛速率分析</strong>：<br>在策略参数空间满足强凸性和平滑性假设的条件下，PPO的收敛速率可达$O(1/\sqrt{T})$，其中$T$为迭代次数。具体而言，经过$T$次迭代后：</p>
+
+$$\mathbb{E}[J(\theta_T) - J(\theta^*)] \leq \frac{R}{\sqrt{T}}$$
+
+<p>其中$\theta^*$为最优策略参数，$R$为与问题相关的常数。</p>
 <p><strong>收敛性解释</strong>：这一收敛速率与随机梯度下降相当，表明PPO在保持单调改进的同时，能够以接近最优的速率收敛到局部最优解。对于大语言模型训练，这意味着PPO能够在合理的时间内找到高质量的策略参数。</p>
 <h3 id="3-4-目标函数设计总结与对比"><a href="#3-4-目标函数设计总结与对比" class="headerlink" title="3.4 目标函数设计总结与对比"></a>3.4 目标函数设计总结与对比</h3><p>PPO的目标函数设计体现了以下核心思想，这些思想直接应对了大语言模型训练中的特定挑战：</p>
 <ol>
