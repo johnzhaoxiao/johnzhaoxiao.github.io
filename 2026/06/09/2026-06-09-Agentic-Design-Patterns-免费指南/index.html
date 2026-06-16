@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/custom-logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/custom-logo.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/custom-logo.png">
+  <link rel="mask-icon" href="/images/custom-logo.png" color="#222">
+  <meta name="google-site-verification" content="X8NbtgXMaZPSnGuujxFu2jstD2cJM2Q4MTHXbcmAVmg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"johnzhaoxiao.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.27.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"utterances","storage":true,"lazyload":false,"nav":null,"activeClass":"utterances"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="一位资深的谷歌工程师悄悄发布一份421页的文档，名为《Agentic Design Patterns》，完全免费，比花几百块购买的AI课程可能都要好。这是一份颇为全面系统性的AI构建指南，而且全程带代码，可直接用于生产环境。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【免费领取】谷歌工程师发布的421页Agentic设计模式指南">
+<meta property="og:url" content="https://johnzhaoxiao.github.io/2026/06/09/2026-06-09-Agentic-Design-Patterns-%E5%85%8D%E8%B4%B9%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="我的技术博客">
+<meta property="og:description" content="一位资深的谷歌工程师悄悄发布一份421页的文档，名为《Agentic Design Patterns》，完全免费，比花几百块购买的AI课程可能都要好。这是一份颇为全面系统性的AI构建指南，而且全程带代码，可直接用于生产环境。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-06-09T00:55:00.000Z">
+<meta property="article:modified_time" content="2026-06-09T00:57:51.662Z">
+<meta property="article:author" content="赵嘉祁">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="免费资源">
+<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="谷歌">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://johnzhaoxiao.github.io/2026/06/09/2026-06-09-Agentic-Design-Patterns-%E5%85%8D%E8%B4%B9%E6%8C%87%E5%8D%97/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://johnzhaoxiao.github.io/2026/06/09/2026-06-09-Agentic-Design-Patterns-%E5%85%8D%E8%B4%B9%E6%8C%87%E5%8D%97/","path":"2026/06/09/2026-06-09-Agentic-Design-Patterns-免费指南/","title":"【免费领取】谷歌工程师发布的421页Agentic设计模式指南"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>【免费领取】谷歌工程师发布的421页Agentic设计模式指南 | 我的技术博客</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+      <img class="custom-logo-image" src="/images/custom-logo.png" alt="我的技术博客">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">我的技术博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">分享AI 、Agent、大模型、强化学习等技术与生活</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-ai简报"><a href="/categories/AI%E7%AE%80%E6%8A%A5/" rel="section"><i class="fa fa-robot fa-fw"></i>AI简报</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%F0%9F%93%96-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">📖 简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%F0%9F%8E%AF-%E6%A0%B8%E5%BF%83%E7%89%B9%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">🎯 核心特点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%85%A8%E9%9D%A2%E7%B3%BB%E7%BB%9F%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text">1. 全面系统性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%85%A8%E7%A8%8B%E5%B8%A6%E4%BB%A3%E7%A0%81"><span class="nav-number">2.2.</span> <span class="nav-text">2. 全程带代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%AE%8C%E5%85%A8%E5%85%8D%E8%B4%B9"><span class="nav-number">2.3.</span> <span class="nav-text">3. 完全免费</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%F0%9F%93%A5-%E8%8E%B7%E5%8F%96%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">📥 获取方式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%F0%9F%92%A1-%E6%8E%A8%E8%8D%90%E7%90%86%E7%94%B1"><span class="nav-number">4.</span> <span class="nav-text">💡 推荐理由</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">赵嘉祁</p>
+  <div class="site-description" itemprop="description">一个AI技术爱好者的博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">68</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnzhaoxiao.github.io/2026/06/09/2026-06-09-Agentic-Design-Patterns-%E5%85%8D%E8%B4%B9%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="赵嘉祁">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="我的技术博客">
+      <meta itemprop="description" content="一个AI技术爱好者的博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="【免费领取】谷歌工程师发布的421页Agentic设计模式指南 | 我的技术博客">
+      <meta itemprop="description" content="一位资深的谷歌工程师悄悄发布一份421页的文档，名为《Agentic Design Patterns》，完全免费，比花几百块购买的AI课程可能都要好。这是一份颇为全面系统性的AI构建指南，而且全程带代码，可直接用于生产环境。">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【免费领取】谷歌工程师发布的421页Agentic设计模式指南
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2026-06-09 08:55:00 / 修改时间：08:57:51" itemprop="dateCreated datePublished" datetime="2026-06-09T08:55:00+08:00">2026-06-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/AI%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">AI技术</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">一位资深的谷歌工程师悄悄发布一份421页的文档，名为《Agentic Design Patterns》，完全免费，比花几百块购买的AI课程可能都要好。这是一份颇为全面系统性的AI构建指南，而且全程带代码，可直接用于生产环境。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>本文介绍一份由谷歌工程师发布的免费421页AI构建指南《Agentic Design Patterns》，包含完整的代码示例，可直接用于生产环境。</p>
+</blockquote>
+<h1 id="📖-简介"><a href="#📖-简介" class="headerlink" title="📖 简介"></a>📖 简介</h1><p>一位资深的谷歌工程师发布了一份 <strong>421 页</strong> 的免费文档，名为《<strong>Agentic Design Patterns</strong>》。</p>
+<p>这份文档在国内似乎没有引起太多关注，但它很可能比市面上几百块的 AI 课程更有价值。</p>
+<h1 id="🎯-核心特点"><a href="#🎯-核心特点" class="headerlink" title="🎯 核心特点"></a>🎯 核心特点</h1><h2 id="1-全面系统性"><a href="#1-全面系统性" class="headerlink" title="1. 全面系统性"></a>1. 全面系统性</h2><p>这是一份颇为全面系统性的 AI 构建指南，涵盖了 Agent 设计的核心模式。</p>
+<h2 id="2-全程带代码"><a href="#2-全程带代码" class="headerlink" title="2. 全程带代码"></a>2. 全程带代码</h2><p>文档全程带有代码示例，理论与实践相结合，可以直接应用于生产环境。</p>
+<h2 id="3-完全免费"><a href="#3-完全免费" class="headerlink" title="3. 完全免费"></a>3. 完全免费</h2><p>无需付费，完全免费获取，这对于想深入学习 Agent 设计的开发者来说是一大福利。</p>
+<h1 id="📥-获取方式"><a href="#📥-获取方式" class="headerlink" title="📥 获取方式"></a>📥 获取方式</h1><p>点击以下链接即可免费获取这份文档：</p>
+<p><strong>PDF 下载地址</strong>：<a target="_blank" rel="noopener" href="https://drive.google.com/file/d/1-5ho2aSZ-z0FcW8W_jMUoFSQ5hTKvJ43/view">https://drive.google.com/file/d/1-5ho2aSZ-z0FcW8W_jMUoFSQ5hTKvJ43/view</a></p>
+<hr>
+<h1 id="💡-推荐理由"><a href="#💡-推荐理由" class="headerlink" title="💡 推荐理由"></a>💡 推荐理由</h1><p>如果你想系统学习 AI Agent 的设计模式，这份文档值得收藏：</p>
+<ul>
+<li>来自谷歌工程师的实战经验总结</li>
+<li>421 页内容，干货满满</li>
+<li>代码可直接用于生产项目</li>
+<li>完全免费，无需任何门槛</li>
+</ul>
+<p>建议先收藏，再找时间系统学习。</p>
+<hr>
+<p><em>原文信息来源：Twitter @GoJun315</em></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/Agent/" rel="tag"># Agent</a>
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+              <a href="/tags/%E8%B0%B7%E6%AD%8C/" rel="tag"># 谷歌</a>
+              <a href="/tags/%E5%85%8D%E8%B4%B9%E8%B5%84%E6%BA%90/" rel="tag"># 免费资源</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/06/08/2026-06-08-%E6%88%91%E7%9F%A5%E9%81%93%E7%9A%84%E6%89%80%E6%9C%89Agentic-Engineering%E6%8A%80%E5%B7%A7/" rel="prev" title="我知道的所有 Agentic Engineering 技巧（2026年 6月）">
+                  <i class="fa fa-angle-left"></i> 我知道的所有 Agentic Engineering 技巧（2026年 6月）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">赵嘉祁</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"johnzhaoxiao/johnzhaoxiao.github.io","issue_term":"pathname","theme":"preferred-color-scheme"}</script>
+<script src="/js/third-party/comments/utterances.js" defer></script>
+
+</body>
+</html>
